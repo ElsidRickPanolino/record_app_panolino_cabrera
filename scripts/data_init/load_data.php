@@ -57,6 +57,10 @@ for ($i = 1; $i <= 50; $i++) {
     $country = $faker->country;
     $postal = $faker->postcode;
 
+
+    // The values of address from faker is at least 100
+    // DATABASE is altered because the maximum length for address is only 45
+
     $sql = "INSERT INTO office (name, contactnum, email, address, city, country, postal) VALUES (:name, :contactnum, :email, :address, :city, :country, :postal)";
     $stmt = $connection->prepare($sql);
     $stmt->bindParam(':name', $name);
