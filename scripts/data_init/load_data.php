@@ -7,11 +7,44 @@ $faker = Faker\Factory::create('en_PH');
 $database = new Database();
 $connection = $database->getConnection();
 
-$data = array();
-
+// $data = array();
 // generate 15 records
-for($i=1; $i<=15; $i++){
-    array_push($data, $faker->unique()->province);
+// for($i=1; $i<=15; $i++){
+//     array_push($data, $faker->unique()->province);
+// }
+// print_r($data);
+
+// $sql = "INSERT INTO province(name) VALUES (:name)";
+// $stmt = $connection->prepare($sql);
+
+
+// foreach ($data as $row) {
+//     $stmt->bindParam(':name', $row);
+//     $stmt->execute();
+// }
+
+
+// generate 200 employee records
+
+$employee_data = array();
+ 
+for($i=1; $i<=200; $i++){
+    $employee_row = array();
+    array_push($employee_row, $faker->lastName(), $faker->firstName(),$faker->numberBetween($min = 1, $max = 55), $faker->address());
+    array_push($employee_data, $employee_row);
+}
+print_r($employee_data);
+
+$sql = "INSERT INTO employee(lastname, firstname, office_id, address) VALUES (:lastname, :firstname, :office_id, :address)";
+$stmt = $connection->prepare($sql);
+
+
+foreach ($employee_data as $row) {
+    $stmt->bindParam(':lastname', $row[0]);
+    $stmt->bindParam(':firstname', $row[1]);
+    $stmt->bindParam(':office_id', $row[2]);
+    $stmt->bindParam(':address', $row[3]);
+    $stmt->execute();
 }
 
 // Generate and insert 50 rows into the "Office" table
@@ -41,7 +74,7 @@ for ($i = 1; $i <= 500; $i++) {
     $employee_id = $faker->numberBetween(1, 50);
     $office_id = $faker->numberBetween(1, 50);
     $datelog = $faker->date;
-    $action = $faker->randomElement(['Action1', 'Action2', 'Action3']);
+    $action = $faker->randomElement(['IN', 'OUT', 'COMPLETE']);
     $remarks = $faker->sentence;
     $documentcode = $faker->word;
 
@@ -55,15 +88,6 @@ for ($i = 1; $i <= 500; $i++) {
     $stmt->bindParam(':documentcode', $documentcode);
     $stmt->execute();
 }
-print_r($data);
 
-$sql = "INSERT INTO province(name) VALUES (:name)";
-$stmt = $connection->prepare($sql);
-
-
-foreach ($data as $row) {
-    $stmt->bindParam(':name', $row);
-    $stmt->execute();
-}
 
 ?>
