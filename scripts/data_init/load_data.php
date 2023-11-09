@@ -7,6 +7,7 @@ $faker = Faker\Factory::create('en_PH');
 $database = new Database();
 $connection = $database->getConnection();
 
+
 // $data = array();
 // generate 15 records
 // for($i=1; $i<=15; $i++){
@@ -24,22 +25,22 @@ $connection = $database->getConnection();
 // }
 
 
-// generate 200 employee records
-
 function generateEmployees($num_of_rows){
 
     global $faker;
     global $database;
     global $connection;
 
+    // set maximum office id
+    $max_off_Id = selectMaxIds()[1];
+
     $employee_data = array();
  
     for($i=1; $i<=$num_of_rows; $i++){
         $employee_row = array();
-        array_push($employee_row, $faker->lastName(), $faker->firstName(),$faker->numberBetween($min = 1, $max = 55), $faker->address());
+        array_push($employee_row, $faker->lastName(), $faker->firstName(),$faker->numberBetween($min = 1, $max = $max_off_Id), $faker->address());
         array_push($employee_data, $employee_row);
     }
-    print_r($employee_data);
 
     $sql = "INSERT INTO employee(lastname, firstname, office_id, address) VALUES (:lastname, :firstname, :office_id, :address)";
     $stmt = $connection->prepare($sql);
@@ -54,7 +55,7 @@ function generateEmployees($num_of_rows){
     }
 }
 
-// Generate and insert 50 rows into the "Office" table
+
 function generateOffice($num_of_rows){
 
     global $faker;
@@ -71,7 +72,7 @@ function generateOffice($num_of_rows){
         $postal = $faker->postcode;
 
 
-        // The values of address from faker is at least 100
+        // The length of address from faker is at least 100
         // DATABASE is altered because the maximum length for address is only 45
 
         $sql = "INSERT INTO office (name, contactnum, email, address, city, country, postal) VALUES (:name, :contactnum, :email, :address, :city, :country, :postal)";
@@ -87,7 +88,7 @@ function generateOffice($num_of_rows){
     }
 }
 
-// Generate and insert 500 rows into the "Transaction" table
+// generate transaction
 function generateTransaction($num_of_rows){
 
     global $faker;
@@ -96,9 +97,13 @@ function generateTransaction($num_of_rows){
 
     $max_date = date('Y-m-d');
 
+    // set maximum if for office and employees
+    $max_emp_id = selectMaxIds()[0];
+    $max_off_Id = selectMaxIds()[1];
+
     for ($i = 1; $i <= $num_of_rows; $i++) {
-        $employee_id = $faker->numberBetween(1, 50);
-        $office_id = $faker->numberBetween(1, 50);
+        $employee_id = $faker->numberBetween(1, $max_emp_id);
+        $office_id = $faker->numberBetween(1, $max_off_Id);
         $datelog = $faker->dateTimeBetween('-20 years', $max_date)->format('Y-m-d');
         $action = $faker->randomElement(['IN', 'OUT', 'COMPLETE']);
         $remarks = $faker->sentence;
@@ -117,9 +122,35 @@ function generateTransaction($num_of_rows){
 
 }
 
-generateOffice(50);
+// Generate and insert 50 rows into the "Office" table
+generateOffice(50); //office is generated first because office id is used in employeed table
+
+// generate 200 employee records
 generateEmployees(200);
+
+// Generate and insert 500 rows into the "Transaction" table
 generateTransaction(500);
 
+
+
+// select the maximum id of employees and office to set the maximum id in generating foreign key
+function selectMaxIds() {
+    global $connection;
+
+    $sql = "SELECT MAX(id) AS max_emp_id, (SELECT MAX(id) FROM office) AS max_off_id FROM employee";
+    $result = $connection->query($sql);
+
+    if ($result) {
+        $row = $result->fetch(PDO::FETCH_ASSOC);
+        $max_emp_Id = $row['max_emp_id'];
+        $max_off_Id = $row['max_off_id'];
+    } else {
+        echo "Error: " . $sql . "<br>" . $connection->errorInfo()[2];
+    }
+
+    $result->closeCursor();
+
+    return [$max_emp_Id, $max_off_Id];
+}
 
 ?>
