@@ -68,7 +68,8 @@ function generateOffice($num_of_rows){
         $email = $faker->email;
         $address = $faker->address;
         $city = $faker->city;
-        $country = $faker->country;
+        // $country = $faker->country;
+        $country = "Philippines";
         $postal = $faker->postcode;
 
 
