@@ -95,6 +95,7 @@ function generateTransaction($num_of_rows){
     global $database;
     global $connection;
 
+    // get the current date to set the max da
     $max_date = date('Y-m-d');
 
     // set maximum if for office and employees
