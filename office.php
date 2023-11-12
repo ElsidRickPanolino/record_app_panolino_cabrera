@@ -57,7 +57,10 @@
                     Tip 2: you can also add an image using data-image tag
                     -->
                 <div class="sidebar-wrapper">
-                    <?php include('includes/sidebar.php');?>
+                    <?php
+                        $active_sidebar = "office";
+                        include('includes/sidebar.php');
+                    ?>
                 </div>
             </div>
             <div class="main-panel">
