@@ -108,10 +108,24 @@
                                                         <td><?php echo $office['country']; ?></td>
                                                         <td><?php echo $office['postal']; ?></td>
                                                         <td>
-                                                            <a href="office-edit.php?id=<?php echo $office['id']; ?>">
-                                                            <button type="submit" class="btn btn-warning btn-fill pull-right">Edit</button>
-                                                            </a>
+                                                            <div class="d-flex justify-content-end">
+                                                                <a href="office-edit.php?id=<?php echo $office['id']; ?>">
+                                                                    <button class="btn btn-warning btn-fill mx-1">Edit</button>
+                                                                </a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete(<?php echo $office['id']; ?>)">
+                                                                    <button class="btn btn-danger btn-fill mx-1">Delete</button>
+                                                                </a>
+                                                            </div>
                                                         </td>
+                                                        <script>
+                                                            function confirmDelete(id) {
+                                                                var result = confirm("Are you sure you want to delete this record?");
+                                                                if (result) {
+                                                                    window.location.href = 'office-delete.php?id=' + id;
+                                                                }
+                                                            }
+                                                        </script>
+
                                                     </tr>
                                                     <?php endforeach; ?>
                                                 </tbody>
