@@ -20,6 +20,34 @@
 
 <body>
     <div class="wrapper">
+
+        <?php
+                require('config/config.php');
+                require('config/db.php');
+
+            $id = $_GET['id'];
+
+            $query = "SELECT * FROM office WHERE id=".$id;
+
+            $result = mysqli_query($conn, $query);  
+
+            if(mysqli_num_rows($result)==1){
+                $office = mysqli_fetch_array($result);
+                $name = $office['name'];
+                $contactnum = $office['contactnum'];
+                $email = $office['email'];
+                $address = $office['address'];
+                $city = $office['city'];
+                $country = $office['name'];
+                $postal = $office['postal'];
+            }
+
+            mysqli_free_result($result);
+            mysqli_close($conn);
+         
+        ?>
+
+
         <div class="sidebar" data-image="assets/img/sidebar-5.jpg">
             <div class="sidebar-wrapper">
                 <?php include('includes/sidebar.php');?>
@@ -32,110 +60,102 @@
 
 
             <?php
-
-                require('config/config.php');
                 require('config/db.php');
 
-                if (isset($_POST['submit'])) {
-                    $documentcode = mysqli_real_escape_string($conn, $_POST['documentcode']);
-                    $action = mysqli_real_escape_string($conn, $_POST['action']);
-                    $remarks = mysqli_real_escape_string($conn, $_POST['remarks']);
-                    $employee_id = mysqli_real_escape_string($conn, $_POST['employee_id']); 
-                    $office_id = mysqli_real_escape_string($conn, $_POST['office_id']);
-
-                    $sql = "INSERT INTO transaction(documentcode, action, remarks, employee_id, office_id) 
-                            VALUES ('$documentcode', '$action', '$remarks', '$employee_id', '$office_id')"; 
+                if (isset($_POST['submit'])){
+                    $name = mysqli_real_escape_string($conn, $_POST['name']);
+                    $contactnum = mysqli_real_escape_string($conn, $_POST['contactnum']);
+                    $email = mysqli_real_escape_string($conn, $_POST['email']);
+                    $address = mysqli_real_escape_string($conn, $_POST['address']);
+                    $city = mysqli_real_escape_string($conn, $_POST['city']);
+                    $country = mysqli_real_escape_string($conn, $_POST['name']);
+                    $postal = mysqli_real_escape_string($conn, $_POST['postal']);
+                        
+                    $sql = "UPDATE office SET name='$name', contactnum='$contactnum', email='$email', address='$address', city='$city', country='$country', postal='$postal'
+                    WHERE id=".$id;
 
                     if (mysqli_query($conn, $sql)) {
-                        echo "<script>alert('Office added')</script>";
+                        echo "<script>alert('Office updated')</script>";
                     } else {
-                        echo "Error: " . mysqli_error($conn);
+                        echo "Error: ".mysqli_error($conn);
                     }
                 }
+
                 mysqli_close($conn);
             ?>
-            
+
             <div class="content">
                 <div class="container-fluid">
                     <div class="section">
                     </div>
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Transactions</h4>
+                                    <h4 class="card-title">Edit Profile</h4>
                                 </div>
                                 <div class="card-body">
-                                    <form method="POST" action="<?php $_SERVER['PHP_SELF']; ?>">
+                                    <form method="POST" action="<?php $_SERVER['PHP_SELF']?>">
                                         <div class="row">
-                                            <div class="col-md-3 pr-1">
+                                            <div class="col-md-5">
                                                 <div class="form-group">
-                                                    <label>Document Code</label>
-                                                    <input name="documentcode" type="text" class="form-control">
+                                                    <label for="name">Office name</label>
+                                                    <input type="text" class="form-control" name="name" value="<?php echo $name; ?>">
                                                 </div>
                                             </div>
-                                            <div class="col-md-3 pr-1">
+                                            <div class="col-md-3">
                                                 <div class="form-group">
-                                                    <label>Action</label>
-                                                    <select class="form-control" name="action">
-                                                        <option>IN</option>
-                                                        <option>OUT</option>
-                                                        <option>COMPLETE</option>
-                                                    </select>
+                                                    <label for="contactnum">Contact number</label>
+                                                    <input type="text" class="form-control" name="contactnum" value="<?php echo $contactnum; ?>">
                                                 </div>
                                             </div>
-                                            <div class="col-md-6 pl-1">
+                                            <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label>Remarks</label>
-                                                    <input name="remarks" type="text" class="form-control">
+                                                    <label for="email">Email address</label>
+                                                    <input type="email" class="form-control" name="email" value="<?php echo $email; ?>">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="address">Address</label>
+                                                    <input type="text" class="form-control" name="address" value="<?php echo $address; ?>">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <div class="form-group">
+                                                    <label for="city">City</label>
+                                                    <input type="text" class="form-control" name="city" value="<?php echo $city; ?>">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="city">Country</label>
+                                                    <input type="text" class="form-control" name="country" value="<?php echo $country; ?>">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label>Postal</label>
+                                                    <input type="text" class="form-control" name="postal" value="<?php echo $postal; ?>">
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="row">
-                                            <div class="col-md-3 pr-1">
-                                                <div class="form-group">
-                                                    <label>Employee</label>
-                                                    <select class="form-control" name="employee_id">
-                                                        <option>Select.....</option>
-                                                        <?php
-                                                            require('config/db.php');
-                                                            $query = "SELECT id, CONCAT(lastname, ',', firstname) as Employee FROM records_app.employee";
-                                                            $result = mysqli_query($conn, $query);
-                                                            while ($row = mysqli_fetch_array($result)) {
-                                                                echo "<option value=" . $row['id'] . ">" . $row['Employee'] . "</option>";
-                                                            }
-                                                        ?>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 pr-1">
-                                                <div class="form-group">
-                                                    <label>Office</label>
-                                                    <select class="form-control" name="office_id">
-                                                        <option>Select.....</option>
-                                                        <?php
-                                                            require('config/db.php');
-                                                            $query = "SELECT id , name FROM records_app.office;";
-                                                            $result = mysqli_query($conn, $query);
-                                                            while ($row = mysqli_fetch_array($result)) {
-                                                                echo "<option value=" . $row['id'] . ">" . $row['name'] . "</option>";
-                                                            }
-                                                        ?>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button type="submit" name="submit" value="submit" class="btn btn-info btn-fill pull-right">Add</button>
+                                        <button type="submit" name="submit" value="submit" class="btn btn-info btn-fill pull-right">Save</button>
                                         <div class="clearfix"></div>
                                     </form>
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-2"></div>
                     </div>
                 </div>
             </div>
-
             <footer class="footer">
                 <div class="container-fluid">
                     <nav>

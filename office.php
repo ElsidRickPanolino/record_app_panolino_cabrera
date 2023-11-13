@@ -23,14 +23,27 @@
             require('config/config.php');
             require('config/db.php');
 
-            //create the query
-            $query = 'SELECT transaction.datelog, transaction.documentcode, transaction.action, office.name as office_name, CONCAT(employee.lastname, ",", employee.firstname) as employee_fullname, transaction.remarks FROM records_app.employee, records_app.office, records_app.transaction 
-            WHERE transaction.employee_id=employee.id and transaction.office_id = office.id';
+            $result_per_page = 10;
+            $query = "SELECT * FROM office";
+            $result = mysqli_query($conn, $query);
+            $number_of_result = mysqli_num_rows($result);
 
-            //get the result
+            $number_of_page = ceil($number_of_result/$result_per_page);
+
+            if(!isset($_GET['page'])){
+                $page = 1;
+            }
+            else{
+                $page = $_GET['page'];
+            }
+            
+            $page_first_result = ($page-1)*$result_per_page;
+
+            $query = "SELECT * FROM office ORDER BY name LIMIT ".$page_first_result.','.$result_per_page;
+
             $result = mysqli_query($conn, $query);
 
-            $transactions = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            $offices = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
             mysqli_free_result($result);
 
@@ -44,7 +57,10 @@
                     Tip 2: you can also add an image using data-image tag
                     -->
                 <div class="sidebar-wrapper">
-                    <?php include('includes/sidebar.php');?>
+                    <?php
+                        $active_sidebar = "office";
+                        include('includes/sidebar.php');
+                    ?>
                 </div>
             </div>
             <div class="main-panel">
@@ -57,44 +73,59 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="card strpied-tabled-with-hover">
-                                    <div class="col-md-12">
-                                            <a href="transactions_add.php">
+                                        <div class="card-header ">
+                                            <h4 class="card-title">OFFICE</h4>
+                                            <p class="card-category">Here is the lists of offices</p>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <a href="office-add.php">
                                                 <button type="submit" class="btn btn-info btn-fill pull-right">
-                                                    ADD NEW TRANSACTION
+                                                    ADD NEW OFFICE
                                                 </button>
                                             </a>
-                                    </div>
-
-                                        <div class="card-header ">
-                                            <h4 class="card-title">TRANSACTION</h4>
-                                            <p class="card-category">Here is the lists of Transactions</p>
                                         </div>
                                         <div class="card-body table-full-width table-responsive">
                                             <table class="table table-hover table-striped">
                                                 <thead>
-                                                    <th>Datelog</th>
-                                                    <th>Document Code</th>
-                                                    <th>Action</th>
-                                                    <th>Office</th>
-                                                    <th>Employee</th>
-                                                    <th>Remarks</th>
+                                                    <th>name</th>
+                                                    <th>contactnum</th>
+                                                    <th>email</th>
+                                                    <th>address</th>
+                                                    <th>City</th>
+                                                    <th>Country</th>
+                                                    <th>Postal</th>
                                                     <th>Action</th>
                                                 </thead>
                                                 <tbody>
-                                                    <?php foreach($transactions as $transaction) : ?>
+                                                    <?php foreach($offices as $office) : ?>
                                                     <tr>
-                                                        <td><?php echo $transaction['datelog']; ?></td>
-                                                        <td><?php echo $transaction['documentcode']; ?></td>
-                                                        <td><?php echo $transaction['action']; ?></td>
-                                                        <td><?php echo $transaction['office_name']; ?></td>
-                                                        <td><?php echo $transaction['employee_fullname']; ?></td>
-                                                        <td><?php echo $transaction['remarks']; ?></td>
-                                                        
+                                                        <td><?php echo $office['name']; ?></td>
+                                                        <td><?php echo $office['contactnum']; ?></td>
+                                                        <td><?php echo $office['email']; ?></td>
+                                                        <td><?php echo $office['address']; ?></td>
+                                                        <td><?php echo $office['city']; ?></td>
+                                                        <td><?php echo $office['country']; ?></td>
+                                                        <td><?php echo $office['postal']; ?></td>
                                                         <td>
-                                                           <a href="transactions_edit.php?id=<?php echo $transaction['id']; ?>">
-                                                                <button class="btn btn-warning btn-fill mx-1">Edit</button>
-                                                            </a>
+                                                            <div class="d-flex justify-content-end">
+                                                                <a href="office-edit.php?id=<?php echo $office['id']; ?>">
+                                                                    <button class="btn btn-warning btn-fill mx-1">Edit</button>
+                                                                </a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete(<?php echo $office['id']; ?>)">
+                                                                    <button class="btn btn-danger btn-fill mx-1">Delete</button>
+                                                                </a>
+                                                            </div>
                                                         </td>
+                                                        <script>
+                                                            function confirmDelete(id) {
+                                                                var result = confirm("Are you sure you want to delete this record?");
+                                                                if (result) {
+                                                                    window.location.href = 'office-delete.php?id=' + id;
+                                                                }
+                                                            }
+                                                        </script>
+
                                                     </tr>
                                                     <?php endforeach; ?>
                                                 </tbody>
@@ -105,6 +136,11 @@
                             </div>
                         </div>
                         <div class="row justify-content-center">
+                            <?php
+                                for($page=1; $page<= $number_of_page; $page++){
+                                    echo '<a href = "office.php?page='.$page.'" class = "btn mx-1">'.$page.'</a>';
+                                }
+                            ?>
                         </div>
                     </div>
                 </div>
