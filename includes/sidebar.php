@@ -21,7 +21,7 @@
         </a>
     </li>
     <li class="nav-item <?php echo $active_sidebar == "employees" ? 'active' : ''; ?>">
-        <a class="nav-link" href="./user.html">
+        <a class="nav-link" href="./employees.php">
             <i class="nc-icon nc-single-02"></i>
             <p>Employees</p>
         </a>

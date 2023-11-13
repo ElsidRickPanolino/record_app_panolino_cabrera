@@ -24,7 +24,7 @@
             require('config/db.php');
 
             $result_per_page = 10;
-            $query = "SELECT * FROM office";
+            $query = "SELECT * FROM employee";
             $result = mysqli_query($conn, $query);
             $number_of_result = mysqli_num_rows($result);
 
@@ -39,11 +39,14 @@
             
             $page_first_result = ($page-1)*$result_per_page;
 
-            $query = "SELECT * FROM office ORDER BY name LIMIT ".$page_first_result.','.$result_per_page;
+            $query = "SELECT employee.id, employee.lastname, employee.firstname, employee.address, office.name AS office_name
+            FROM employee, office
+            WHERE employee.office_id = office.id 
+            LIMIT ".$page_first_result.','.$result_per_page;
 
             $result = mysqli_query($conn, $query);
 
-            $offices = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            $employees = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
             mysqli_free_result($result);
 
@@ -53,7 +56,7 @@
             <div class="sidebar" data-image="assets/img/sidebar-5.jpg">
                 <div class="sidebar-wrapper">
                     <?php
-                        $active_sidebar = "office";
+                        $active_sidebar = "employees";
                         include('includes/sidebar.php');
                     ?>
                 </div>
@@ -69,45 +72,38 @@
                                 <div class="col-md-12">
                                     <div class="card strpied-tabled-with-hover">
                                         <div class="card-header ">
-                                            <h4 class="card-title">OFFICE</h4>
+                                            <h4 class="card-title">EMPLOYEES</h4>
                                             <p class="card-category">Here is the lists of offices</p>
                                         </div>
 
                                         <div class="col-md-12">
-                                            <a href="office-add.php">
+                                            <a href="employees-add.php">
                                                 <button type="submit" class="btn btn-info btn-fill pull-right">
-                                                    ADD NEW OFFICE
+                                                    ADD NEW EMPLOYEE
                                                 </button>
                                             </a>
                                         </div>
                                         <div class="card-body table-full-width table-responsive">
                                             <table class="table table-hover table-striped">
                                                 <thead>
-                                                    <th>name</th>
-                                                    <th>contactnum</th>
-                                                    <th>email</th>
-                                                    <th>address</th>
-                                                    <th>City</th>
-                                                    <th>Country</th>
-                                                    <th>Postal</th>
-                                                    <th>Action</th>
+                                                    <th>Last name</th>
+                                                    <th>First name</th>
+                                                    <th>Address</th>
+                                                    <th>Office</th>
                                                 </thead>
                                                 <tbody>
-                                                    <?php foreach($offices as $office) : ?>
+                                                    <?php foreach($employees as $employee) : ?>
                                                     <tr>
-                                                        <td><?php echo $office['name']; ?></td>
-                                                        <td><?php echo $office['contactnum']; ?></td>
-                                                        <td><?php echo $office['email']; ?></td>
-                                                        <td><?php echo $office['address']; ?></td>
-                                                        <td><?php echo $office['city']; ?></td>
-                                                        <td><?php echo $office['country']; ?></td>
-                                                        <td><?php echo $office['postal']; ?></td>
+                                                        <td><?php echo $employee['lastname']; ?></td>
+                                                        <td><?php echo $employee['firstname']; ?></td>
+                                                        <td><?php echo $employee['address']; ?></td>
+                                                        <td><?php echo $employee['office_name']; ?></td>
                                                         <td>
                                                             <div class="d-flex justify-content-end">
-                                                                <a href="office-edit.php?id=<?php echo $office['id']; ?>">
+                                                                <a href="employees-edit.php?id=<?php echo $employee['id']; ?>">
                                                                     <button class="btn btn-warning btn-fill mx-1">Edit</button>
                                                                 </a>
-                                                                <a href="javascript:void(0);" onclick="confirmDelete(<?php echo $office['id']; ?>)">
+                                                                <a href="javascript:void(0);" onclick="confirmDelete(<?php echo $employee['id']; ?>)">
                                                                     <button class="btn btn-danger btn-fill mx-1">Delete</button>
                                                                 </a>
                                                             </div>
@@ -116,7 +112,7 @@
                                                             function confirmDelete(id) {
                                                                 var result = confirm("Are you sure you want to delete this record?");
                                                                 if (result) {
-                                                                    window.location.href = 'office-delete.php?id=' + id;
+                                                                    window.location.href = 'employees-delete.php?id=' + id;
                                                                 }
                                                             }
                                                         </script>
@@ -133,7 +129,7 @@
                         <div class="row justify-content-center">
                             <?php
                                 for($page=1; $page<= $number_of_page; $page++){
-                                    echo '<a href = "office.php?page='.$page.'" class = "btn mx-1">'.$page.'</a>';
+                                    echo '<a href = "employees.php?page='.$page.'" class = "btn mx-1">'.$page.'</a>';
                                 }
                             ?>
                         </div>
