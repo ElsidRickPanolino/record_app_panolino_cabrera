@@ -50,7 +50,10 @@
 
         <div class="sidebar" data-image="assets/img/sidebar-5.jpg">
             <div class="sidebar-wrapper">
-                <?php include('includes/sidebar.php');?>
+                <?php
+                    $active_sidebar = "office";
+                    include('includes/sidebar.php');
+                ?>
             </div>
         </div>
         <div class="main-panel">
