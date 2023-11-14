@@ -47,7 +47,7 @@
                             VALUES ('$documentcode', '$action', '$remarks', '$employee_id', '$office_id')"; 
 
                     if (mysqli_query($conn, $sql)) {
-                        echo "<script>alert('Office added')</script>";
+                        echo "<script>alert('Transactions added')</script>";
                     } else {
                         echo "Error: " . mysqli_error($conn);
                     }
