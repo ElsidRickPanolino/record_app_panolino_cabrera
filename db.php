@@ -3,7 +3,7 @@
 class Database {
     private $host = 'localhost';
     private $username = 'root';
-    private $password = '1234';
+    private $password = '9090';
     private $database = 'records_app';
     private $conn;
 

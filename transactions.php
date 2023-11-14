@@ -23,9 +23,26 @@
             require('config/config.php');
             require('config/db.php');
 
+            $result_per_page = 15;
+
+            $query = "SELECT * FROM transaction";
+            $result = mysqli_query($conn, $query);
+            $number_of_result = mysqli_num_rows($result);
+
+            $number_of_page = ceil($number_of_result / $result_per_page);
+
+            if(!isset($_GET['page'])){
+                $page = 1;
+            }else{
+                $page = $_GET['page'];
+            }
+
+            $page_first_result = ($page-1) * $result_per_page;
+
             //create the query
-            $query = 'SELECT transaction.datelog, transaction.documentcode, transaction.action, office.name as office_name, CONCAT(employee.lastname, ",", employee.firstname) as employee_fullname, transaction.remarks FROM records_app.employee, records_app.office, records_app.transaction 
-            WHERE transaction.employee_id=employee.id and transaction.office_id = office.id';
+            $query = 'SELECT transaction.datelog, transaction.documentcode, transaction.action, office.name as office_name, CONCAT(employee.lastname, ",", employee.firstname) as employee_fullname, transaction.remarks, transaction.id
+            FROM records_app.employee, records_app.office, records_app.transaction 
+            WHERE transaction.employee_id=employee.id and transaction.office_id = office.id LIMIT '. $page_first_result .',' . $result_per_page;
 
             //get the result
             $result = mysqli_query($conn, $query);
@@ -103,6 +120,11 @@
                                     </div>
                                 </div>
                             </div>
+                            <?php
+                                for($page=1; $page <= $number_of_page; $page++){
+                                    echo '<a href = "transaction.php?page='. $page .'" class="btn mx-1">' . $page . '</a>';
+                                }
+                            ?>
                         </div>
                         <div class="row justify-content-center">
                         </div>
