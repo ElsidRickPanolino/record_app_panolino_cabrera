@@ -23,7 +23,7 @@
             require('config/config.php');
             require('config/db.php');
 
-            $result_per_page = 15;
+            $result_per_page = 25;
 
             $query = "SELECT * FROM transaction";
             $result = mysqli_query($conn, $query);
@@ -42,7 +42,7 @@
             //create the query
             $query = 'SELECT transaction.datelog, transaction.documentcode, transaction.action, office.name as office_name, CONCAT(employee.lastname, ",", employee.firstname) as employee_fullname, transaction.remarks, transaction.id
             FROM records_app.employee, records_app.office, records_app.transaction 
-            WHERE transaction.employee_id=employee.id and transaction.office_id = office.id LIMIT '. $page_first_result .',' . $result_per_page;
+            WHERE transaction.employee_id=employee.id and transaction.office_id = office.id ORDER BY transaction.datelog DESC LIMIT '. $page_first_result .',' . $result_per_page;
 
             //get the result
             $result = mysqli_query($conn, $query);
@@ -61,7 +61,9 @@
                     Tip 2: you can also add an image using data-image tag
                     -->
                 <div class="sidebar-wrapper">
-                    <?php include('includes/sidebar.php');?>
+                    <?php
+                        $active_sidebar = "transactions";
+                        include('includes/sidebar.php');?>
                 </div>
             </div>
             <div class="main-panel">
@@ -74,17 +76,16 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="card strpied-tabled-with-hover">
-                                    <div class="col-md-12">
+                                        <div class="card-header ">
+                                            <h4 class="card-title">TRANSACTIONS</h4>
+                                            <p class="card-category">Here is the lists of Transactions</p>
+                                        </div>
+                                        <div class="col-md-12">
                                             <a href="transactions_add.php">
                                                 <button type="submit" class="btn btn-info btn-fill pull-right">
                                                     ADD NEW TRANSACTION
                                                 </button>
                                             </a>
-                                    </div>
-
-                                        <div class="card-header ">
-                                            <h4 class="card-title">TRANSACTION</h4>
-                                            <p class="card-category">Here is the lists of Transactions</p>
                                         </div>
                                         <div class="card-body table-full-width table-responsive">
                                             <table class="table table-hover table-striped">
@@ -107,11 +108,23 @@
                                                         <td><?php echo $transaction['employee_fullname']; ?></td>
                                                         <td><?php echo $transaction['remarks']; ?></td>
                                                         
+                                                        
                                                         <td>
-                                                           <a href="transactions_edit.php?id=<?php echo $transaction['id']; ?>">
+                                                            <a href="transactions_edit.php?id=<?php echo $transaction['id']; ?>">
                                                                 <button class="btn btn-warning btn-fill mx-1">Edit</button>
                                                             </a>
+                                                            <a href="javascript:void(0);" onclick="confirmDelete(<?php echo $transaction['id']; ?>)">
+                                                                <button class="btn btn-danger btn-fill mx-1">Delete</button>
+                                                            </a>
                                                         </td>
+                                                        <script>
+                                                            function confirmDelete(id) {
+                                                                var result = confirm("Are you sure you want to delete this record?");
+                                                                if (result) {
+                                                                    window.location.href = 'transactions-delete.php?id=' + id;
+                                                                }
+                                                            }
+                                                        </script>
                                                     </tr>
                                                     <?php endforeach; ?>
                                                 </tbody>
@@ -120,13 +133,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <?php
-                                for($page=1; $page <= $number_of_page; $page++){
-                                    echo '<a href = "transaction.php?page='. $page .'" class="btn mx-1">' . $page . '</a>';
-                                }
-                            ?>
                         </div>
                         <div class="row justify-content-center">
+                            <?php
+                                for($page=1; $page <= $number_of_page; $page++){
+                                    echo '<a href = "transactions.php?page='. $page .'" class="btn mx-1">' . $page . '</a>';
+                                }
+                            ?>
                         </div>
                     </div>
                 </div>

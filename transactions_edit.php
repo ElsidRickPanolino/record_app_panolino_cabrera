@@ -27,19 +27,18 @@
 
             $id = $_GET['id'];
 
-            $query = "SELECT * FROM office WHERE id=".$id;
+            $query = "SELECT * FROM transaction WHERE id=".$id;
 
             $result = mysqli_query($conn, $query);  
 
             if(mysqli_num_rows($result)==1){
-                $office = mysqli_fetch_array($result);
-                $name = $office['name'];
-                $contactnum = $office['contactnum'];
-                $email = $office['email'];
-                $address = $office['address'];
-                $city = $office['city'];
-                $country = $office['name'];
-                $postal = $office['postal'];
+                $transaction = mysqli_fetch_array($result);
+                $employee_id = $transaction['employee_id'];
+                $office_id = $transaction['office_id'];
+                $datelog = $transaction['datelog'];
+                $action = $transaction['action'];
+                $remarks = $transaction['remarks'];
+                $documentcode = $transaction['documentcode'];
             }
 
             mysqli_free_result($result);
@@ -63,19 +62,20 @@
                 require('config/db.php');
 
                 if (isset($_POST['submit'])){
-                    $name = mysqli_real_escape_string($conn, $_POST['name']);
-                    $contactnum = mysqli_real_escape_string($conn, $_POST['contactnum']);
-                    $email = mysqli_real_escape_string($conn, $_POST['email']);
-                    $address = mysqli_real_escape_string($conn, $_POST['address']);
-                    $city = mysqli_real_escape_string($conn, $_POST['city']);
-                    $country = mysqli_real_escape_string($conn, $_POST['name']);
-                    $postal = mysqli_real_escape_string($conn, $_POST['postal']);
+
+                    $employee_id = mysqli_real_escape_string($conn, $_POST['employee_id']);
+                    $office_id = mysqli_real_escape_string($conn, $_POST['office_id']);
+                    $datelog = mysqli_real_escape_string($conn, $_POST['datelog']);
+                    $action = mysqli_real_escape_string($conn, $_POST['action']);
+                    $remarks = mysqli_real_escape_string($conn, $_POST['remarks']);
+                    $documentcode = mysqli_real_escape_string($conn, $_POST['documentcode']);
+
                         
-                    $sql = "UPDATE office SET name='$name', contactnum='$contactnum', email='$email', address='$address', city='$city', country='$country', postal='$postal'
+                    $sql = "UPDATE transaction SET employee_id='$employee_id', office_id='$office_id', datelog='$datelog', action='$action', remarks='$remarks', documentcode='$documentcode'
                     WHERE id=".$id;
 
                     if (mysqli_query($conn, $sql)) {
-                        echo "<script>alert('Office updated')</script>";
+                        echo "<script>alert('Transaction updated')</script>";
                     } else {
                         echo "Error: ".mysqli_error($conn);
                     }
@@ -93,55 +93,125 @@
                         <div class="col-md-8">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Edit Profile</h4>
+                                    <h4 class="card-title">Edit Transaction</h4>
                                 </div>
                                 <div class="card-body">
                                     <form method="POST" action="<?php $_SERVER['PHP_SELF']?>">
                                         <div class="row">
-                                            <div class="col-md-5">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="name">Office name</label>
-                                                    <input type="text" class="form-control" name="name" value="<?php echo $name; ?>">
+                                                    <label for="employee_id">Employee</label>
+                                                        <select class="custom-select" name="employee_id">
+                                                            <?php
+                                                                require('config/db.php');
+                                                                
+                                                                $query = "SELECT CONCAT(firstname,' ',lastname) AS fullname FROM employee WHERE id =".$employee_id;
+                                                                $result = mysqli_query($conn, $query);
+
+                                                                if ($result && mysqli_num_rows($result) == 1) {
+                                                                    $row = mysqli_fetch_row($result);
+                                                                    $fullname = $row[0];
+                                                                    echo "<option value='".$employee_id."'>".$fullname."</option>";
+                                                                } else {
+                                                                    $fullname = "No employee found";
+                                                                }
+
+                                                                mysqli_free_result($result);
+                                                                mysqli_close($conn);
+                                                            ?>
+
+                                                            <?php
+                                                                require('config/db.php');
+
+                                                                $query = "SELECT id, CONCAT(firstname,' ',lastname) AS fullname FROM employee";
+                                                                $result = mysqli_query($conn, $query);  
+
+                                                                if (mysqli_num_rows($result) > 0) {
+                                                                    while ($employee = mysqli_fetch_assoc($result)) {
+                                                                        echo "<option value='" . $employee['id'] . "'>" . $employee['fullname'] . "</option>";
+                                                                    }
+                                                                } else {
+                                                                    echo "<option value=''>No employee available</option>";
+                                                                }
+
+                                                                mysqli_free_result($result);
+                                                                mysqli_close($conn);
+                                                            ?>
+                                                        </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="contactnum">Contact number</label>
-                                                    <input type="text" class="form-control" name="contactnum" value="<?php echo $contactnum; ?>">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="email">Email address</label>
-                                                    <input type="email" class="form-control" name="email" value="<?php echo $email; ?>">
+                                                    <label for="employee_id">Office</label>
+                                                        <select class="custom-select" name="office_id">
+                                                            <?php
+                                                                require('config/db.php');
+                                                                
+                                                                $query = "SELECT name FROM office WHERE id =".$office_id;
+                                                                $result = mysqli_query($conn, $query);
+
+                                                                if ($result && mysqli_num_rows($result) == 1) {
+                                                                    $row = mysqli_fetch_row($result);
+                                                                    $name = $row[0];
+                                                                    echo "<option value='".$office_id."'>".$name."</option>";
+                                                                } else {
+                                                                    $name = "No employee found";
+                                                                }
+
+                                                                mysqli_free_result($result);
+                                                                mysqli_close($conn);
+                                                            ?>
+
+                                                            <?php
+                                                                require('config/db.php');
+
+                                                                $query = "SELECT id, name FROM office";
+                                                                $result = mysqli_query($conn, $query);  
+
+                                                                if (mysqli_num_rows($result) > 0) {
+                                                                    while ($office = mysqli_fetch_assoc($result)) {
+                                                                        echo "<option value='" . $office['id'] . "'>" . $office['name'] . "</option>";
+                                                                    }
+                                                                } else {
+                                                                    echo "<option value=''>No office available</option>";
+                                                                }
+
+                                                                mysqli_free_result($result);
+                                                                mysqli_close($conn);
+                                                            ?>
+                                                        </select>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-12">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="address">Address</label>
-                                                    <input type="text" class="form-control" name="address" value="<?php echo $address; ?>">
+                                                    <label for="datelog">Datelog</label>
+                                                    <input type="date" class="form-control" name="datelog" value="<?php echo date('Y-m-d', strtotime($datelog)); ?>">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Action</label>
+                                                    <select class="form-control" name="action">
+                                                        <option>IN</option>
+                                                        <option>OUT</option>
+                                                        <option>COMPLETE</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-5">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="city">City</label>
-                                                    <input type="text" class="form-control" name="city" value="<?php echo $city; ?>">
+                                                    <label for="city">Remarks</label>
+                                                    <input type="text" class="form-control" name="remarks" value="<?php echo $remarks; ?>">
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="city">Country</label>
-                                                    <input type="text" class="form-control" name="country" value="<?php echo $country; ?>">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label>Postal</label>
-                                                    <input type="text" class="form-control" name="postal" value="<?php echo $postal; ?>">
+                                                    <label for="city">Document code</label>
+                                                    <input type="text" class="form-control" name="documentcode" value="<?php echo $documentcode; ?>">
                                                 </div>
                                             </div>
                                         </div>

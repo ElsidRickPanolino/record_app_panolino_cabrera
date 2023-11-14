@@ -129,7 +129,6 @@
                                                             if ($result && mysqli_num_rows($result) == 1) {
                                                                 $row = mysqli_fetch_row($result);
                                                                 $name = $row[0];
-                                                                echo "<script>alert(".$name.")</script>";
                                                                 echo "<option value='".$office_id."'>".$name."</option>";
                                                             } else {
                                                                 $name = "No office found";
